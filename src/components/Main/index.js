@@ -20,6 +20,7 @@ class Main extends Component {
             favorites:[],
         };
         this.loadData(page,searchText);
+        this.loadFavorites();
     }
     setLastPage = (lastPage) => {
         this.setState({lastPage});
@@ -67,6 +68,28 @@ class Main extends Component {
             console.log(e);
         }
     }
+    
+    loadFavorites = async () => {
+        var favoritesOptions = {
+            uri: `${localhostServer}/favorites`,
+            qs: {
+            },
+            headers: {
+                'User-Agent': 'Request-Promise'
+            },
+            json: true,
+        };
+        const favoritesPromise = requestPromise(favoritesOptions)
+        
+        try {
+            const favorites = await favoritesPromise;
+            this.setState({
+                favorites:[...favorites]
+            })
+        } catch (e){
+            console.log(e);
+        }
+    }
     prevPage = () =>{
         const page = this.state.page - 1 <=0 ? 1 : this.state.page - 1;
         this.loadData(page, this.state.searchText);
@@ -91,10 +114,10 @@ class Main extends Component {
         })
     }
     addToFavorites = (player)=>{
-        this.setState({favorites: [...this.state.favorites,player]})
+        this.setState({favorites: [...this.state.favorites,{id:player.id}]})
     }
     removeFromFavorites = (player)=>{
-        this.setState({favorites: [...this.state.favorites].filter((aFav)=>aFav.id !== player.id)})
+        this.setState({favorites: [...this.state.favorites].filter((aFavId)=>aFavId.id !== player.id)})
     }
     render() {
         return (
@@ -113,6 +136,7 @@ class Main extends Component {
                             key = {index}
                             player={player}
                             teams={this.state.teams}
+                            favorites={this.state.favorites}
                             reLoad={()=>{this.loadData(this.state.page, this.state.searchText)}}
                             addToFavorites={this.addToFavorites}
                             removeFromFavorites={this.removeFromFavorites}

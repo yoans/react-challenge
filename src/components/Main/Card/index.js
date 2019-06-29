@@ -11,18 +11,23 @@ class Card extends Component {
         this.state = {
             editing:false,
             newPlayer: Object.assign({}, props.player),
+            favorited: props.favorites.find((aFav)=>aFav===props.player.id),
         }
     }
     componentDidUpdate(prevProps, prevState){
         if (this.props.player !== prevProps.player) {
             this.cancel();
         }
+        if (this.props.favorites !== prevProps.favorites) {
+            this.setState({
+                favorited: this.props.favorites.find((aFav)=>aFav.id===this.props.player.id),
+            })
+        }
     }
     cancel = () =>{
         this.setState({
             newPlayer:{...this.props.player},
             editing:false,
-            favorited:false,
         })
     }
     saveChanges = async () =>{
@@ -55,6 +60,52 @@ class Card extends Component {
         }
         this.props.reLoad();
     }
+    saveFavorite = async () =>{
+        this.setState({
+            editing:false
+        })
+        var saveFavoriteOptions = {
+            method: 'POST',
+            uri: `${localhostServer}/favorites`,
+            qs: {
+            },
+            body: {
+                id: this.props.player.id
+            },
+            headers: {
+                'User-Agent': 'Request-Promise',
+                'Content-Type': 'application/json'
+            },
+            json: true,
+        };
+        const favoritePromise = requestPromise(saveFavoriteOptions)
+        
+        try {
+            await favoritePromise;
+        } catch (e){
+            console.log(e);
+        }
+    }
+    removeFavorite = async () =>{
+        this.setState({
+            editing:false
+        })
+        var saveFavoriteOptions = {
+            method: 'DELETE',
+            uri: `${localhostServer}/favorites/${this.props.player.id}`,
+            headers: {
+                'User-Agent': 'Request-Promise',
+                'Content-Type': 'application/json'
+            },
+        };
+        const favoritePromise = requestPromise(saveFavoriteOptions)
+        
+        try {
+            await favoritePromise;
+        } catch (e){
+            console.log(e);
+        }
+    }
     toggleEditing = () =>{
         const wasEditing = this.state.editing;
         this.setState({editing:!this.state.editing})
@@ -66,8 +117,10 @@ class Card extends Component {
         const wasFavorited= this.state.favorited;
         this.setState({favorited:!this.state.favorited})
         if(wasFavorited){
+            this.removeFavorite()
             this.props.removeFromFavorites(this.props.player);
         }else{
+            this.saveFavorite();
             this.props.addToFavorites(this.props.player);
         }
     }
