@@ -11,30 +11,37 @@ class Main extends Component {
     constructor(props){
         super(props);
         const page = 1;
+        const searchText = '';
         this.state = {
             players: [],
             teams: [],
             page,
+            searchText,
         };
-        this.loadData(page);
+        this.loadData(page,searchText);
     }
     setLastPage = (lastPage) => {
         this.setState({lastPage});
     }
 
-    loadData = async (page) => {
+    loadData = async (page, searchText) => {
         var playersOptions = {
             uri: `${localhostServer}/players`,
             qs: {
-                _page: `${page}`,
+                _page: page,
+                q: searchText,
             },
             headers: {
                 'User-Agent': 'Request-Promise'
             },
             json: true,
             transform: (body, response, resolveWithFullResponse) => {
-                const lastPage = response.headers.link.split(',').pop().match(/.*_page=(.*)>;.*/)[1]
-                this.setLastPage(lastPage)
+                if(response.headers.link){
+                    const lastPage = response.headers.link.split(',').pop().match(/.*_page=([0-9]*).*/)[1]
+                    this.setLastPage(lastPage)
+                }else{
+                    this.setLastPage(1)
+                }
                 return body;
             }
         };
@@ -61,17 +68,25 @@ class Main extends Component {
     }
     prevPage = () =>{
         const page = this.state.page - 1 <=0 ? 1 : this.state.page - 1;
-        
-        this.loadData(page);
+        this.loadData(page, this.state.searchText);
         this.setState({
             page
         })
     }
     nextPage = () =>{
         const page = this.state.page + 1 >= this.state.lastPage ? this.state.lastPage : this.state.page + 1;
-        this.loadData(page);
+        this.loadData(page, this.state.searchText);
         this.setState({
             page
+        })
+    }
+
+    loadDataOnSearch = (searchText) => {
+        const page = 1;
+        this.loadData(page, searchText);
+        this.setState({
+            page,
+            searchText
         })
     }
 
@@ -79,7 +94,10 @@ class Main extends Component {
         return (
             <div style={{ ...styles.container, ...this.props.style }}>
                 <div style={styles.title}>NBA Interview</div>
-                <Search style={styles.search} />
+                <Search
+                    loadDataOnSearch={this.loadDataOnSearch}
+                    style={styles.search}
+                />
                 <button onClick={this.prevPage}>Previous Page</button>
                 <button  onClick={this.nextPage}>Next Page</button>
                 {
