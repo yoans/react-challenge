@@ -86,6 +86,34 @@ class Card extends Component {
             console.log(e);
         }
     }
+    
+    saveOrder = async (index) =>{
+        this.setState({
+            editing:false
+        })
+        var saveFavoriteOptions = {
+            method: 'PATCH',
+            uri: `${localhostServer}/favorites`,
+            qs: {
+            },
+            body: {
+                id: this.props.player.id,
+                index,
+            },
+            headers: {
+                'User-Agent': 'Request-Promise',
+                'Content-Type': 'application/json'
+            },
+            json: true,
+        };
+        const favoritePromise = requestPromise(saveFavoriteOptions)
+        
+        try {
+            await favoritePromise;
+        } catch (e){
+            console.log(e);
+        }
+    }
     removeFavorite = async () =>{
         this.setState({
             editing:false
@@ -194,6 +222,7 @@ class Card extends Component {
                             padding: '0'
                         }:{})
                     }}
+                    draggable={!!this.props.mini}
                     alt="player_image"
                 />
 
