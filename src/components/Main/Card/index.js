@@ -15,18 +15,19 @@ class Card extends Component {
     }
     componentDidUpdate(prevProps, prevState){
         if (this.props.player !== prevProps.player) {
-            this.setState({newPlayer: {...this.props.player}});
-          }
+            this.cancel();
+        }
     }
     cancel = () =>{
         this.setState({
-            newPlayer:this.props.player,
-            editing:!this.state.editing
+            newPlayer:{...this.props.player},
+            editing:false,
+            favorited:false,
         })
     }
     saveChanges = async () =>{
         this.setState({
-            editing:!this.state.editing
+            editing:false
         })
         var savePlayerOptions = {
             method: 'PATCH',
@@ -61,6 +62,15 @@ class Card extends Component {
             this.saveChanges();
         }
     }
+    togglefavorited = () =>{
+        const wasFavorited= this.state.favorited;
+        this.setState({favorited:!this.state.favorited})
+        if(wasFavorited){
+            this.props.removeFromFavorites(this.props.player);
+        }else{
+            this.props.addToFavorites(this.props.player);
+        }
+    }
     updateNewPlayer=(property)=>(e)=>{
         this.setState({newPlayer:{
             ...this.state.newPlayer,
@@ -79,6 +89,8 @@ class Card extends Component {
         } = player;
         return (
             <div style={{ ...styles.container, ...style }}>
+            
+                <button onClick={this.togglefavorited}>{this.state.favorited?'Remove From Favorites':'Add To Favorites'}</button>
                 <button onClick={this.toggleEditing}>{this.state.editing?'Save':'Edit'}</button>
                 <div style = {{
                     ...(this.state.editing?{}:{display:'none'})
@@ -91,8 +103,9 @@ class Card extends Component {
                     }}
                 >
                     {
-                        ['image','name','position'].map((property)=>
+                        ['image','name','position'].map((property,index)=>
                             <input
+                                key={index}
                                 type='text'
                                 onChange={this.updateNewPlayer(property)}
                                 value={this.state.newPlayer[property]}
@@ -103,8 +116,11 @@ class Card extends Component {
                         value={this.state.newPlayer.team}
                         onChange={this.updateNewPlayer('team')}
                     >
-                        {this.props.teams.map((aTeam)=>
-                            <option value={aTeam.id} >
+                        {this.props.teams.map((aTeam,index)=>
+                            <option
+                                key={index}
+                                value={aTeam.id}
+                            >
                                 {aTeam.name}
                             </option>
                         )}

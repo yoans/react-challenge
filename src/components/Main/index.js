@@ -17,6 +17,7 @@ class Main extends Component {
             teams: [],
             page,
             searchText,
+            favorites:[],
         };
         this.loadData(page,searchText);
     }
@@ -89,11 +90,17 @@ class Main extends Component {
             searchText
         })
     }
-
+    addToFavorites = (player)=>{
+        this.setState({favorites: [...this.state.favorites,player]})
+    }
+    removeFromFavorites = (player)=>{
+        this.setState({favorites: [...this.state.favorites].filter((aFav)=>aFav.id !== player.id)})
+    }
     render() {
         return (
             <div style={{ ...styles.container, ...this.props.style }}>
                 <div style={styles.title}>NBA Interview</div>
+                # of Favorites:{this.state.favorites.length}
                 <Search
                     loadDataOnSearch={this.loadDataOnSearch}
                     style={styles.search}
@@ -107,6 +114,8 @@ class Main extends Component {
                             player={player}
                             teams={this.state.teams}
                             reLoad={()=>{this.loadData(this.state.page, this.state.searchText)}}
+                            addToFavorites={this.addToFavorites}
+                            removeFromFavorites={this.removeFromFavorites}
                         />
                     )
                 }
