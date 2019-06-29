@@ -59,8 +59,8 @@ class Main extends Component {
             const players = await playersPromise;
             const teams = await teamsPromise;
             this.setState({
-                teams,
-                players
+                teams:[...teams],
+                players:[...players]
             })
         } catch (e){
             console.log(e);
@@ -104,9 +104,9 @@ class Main extends Component {
                     this.state.players.map((player, index)=>
                         <Card
                             key = {index}
-                            name={player.name}
-                            image={`${localhostServer}/${player.image}`} 
-                            team={this.state.teams.find(team=>team.id === player.team).name} 
+                            player={player}
+                            teams={this.state.teams}
+                            reLoad={()=>{this.loadData(this.state.page, this.state.searchText)}}
                         />
                     )
                 }
