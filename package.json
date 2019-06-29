@@ -5,7 +5,9 @@
     "dependencies": {
         "react": "^16.8.6",
         "react-dom": "^16.8.6",
-        "react-scripts": "3.0.0"
+        "react-scripts": "3.0.0",
+        "request-promise": "^4.2.4",
+        "typescript": "^3.5.2"
     },
     "scripts": {
         "start": "./node_modules/.bin/concurrently \"cd ./node_modules/react-interview-json-server && node index.js\" \"react-scripts start\"",

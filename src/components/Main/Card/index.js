@@ -9,7 +9,7 @@ const Card = props => {
         team,
     } = props;
     return (
-        <div style={{ ...styles.container, ...props.style }}>
+        <div style={{ ...styles.container, ...style }}>
             <div style={styles.name}>{name}</div>
             <img src={image} style={styles.playerImage} alt="player_image" />
 
