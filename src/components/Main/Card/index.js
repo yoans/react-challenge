@@ -99,6 +99,16 @@ class Card extends Component {
                             />
                         )
                     }
+                    <select
+                        value={this.state.newPlayer.team}
+                        onChange={this.updateNewPlayer('team')}
+                    >
+                        {this.props.teams.map((aTeam)=>
+                            <option value={aTeam.id} >
+                                {aTeam.name}
+                            </option>
+                        )}
+                    </select>
                 </div>
                 <div style={styles.name}>{name}</div>
                 <img src={`${localhostServer}/${image}`} style={styles.playerImage} alt="player_image" />
