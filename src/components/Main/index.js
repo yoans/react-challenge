@@ -18,6 +18,7 @@ class Main extends Component {
             page,
             searchText,
             favorites:[],
+            showFavorites:false,
         };
         this.loadData(page,searchText);
         this.loadFavorites();
@@ -121,15 +122,22 @@ class Main extends Component {
     }
     render() {
         return (
-            <div style={{ ...styles.container, ...this.props.style }}>
+            <>
+            <div style={
+                {
+                    ...styles.container,
+                    ...this.props.style,
+                    ...(this.state.showFavorites?{display:'none'}:{})
+                }
+            }>
                 <div style={styles.title}>NBA Interview</div>
-                # of Favorites:{this.state.favorites.length}
+                <button onClick={()=>{this.setState({showFavorites:true})}}># of Favorites:{this.state.favorites.length}</button>
                 <Search
                     loadDataOnSearch={this.loadDataOnSearch}
                     style={styles.search}
                 />
                 <button onClick={this.prevPage}>Previous Page</button>
-                <button  onClick={this.nextPage}>Next Page</button>
+                <button onClick={this.nextPage}>Next Page</button>
                 {
                     this.state.players.map((player, index)=>
                         <Card
@@ -144,6 +152,34 @@ class Main extends Component {
                     )
                 }
             </div>
+            <div
+                style = {{
+                    position:'absolute',
+                    top:'0',
+                    width:'100%',
+                    height:'100%',
+                    zIndex:'10',
+                    backgroundColor:'white',
+                    ...(this.state.showFavorites?{}:{display:'none'})
+                }}
+            >
+                <button onClick={()=>{this.setState({showFavorites:false})}}>back</button>
+                {
+                    this.state.players.map((player, index)=>
+                        <Card
+                            key = {index}
+                            mini = {true}
+                            player={player}
+                            teams={this.state.teams}
+                            favorites={this.state.favorites}
+                            reLoad={()=>{this.loadData(this.state.page, this.state.searchText)}}
+                            addToFavorites={this.addToFavorites}
+                            removeFromFavorites={this.removeFromFavorites}
+                        />
+                    )
+                }
+            </div>
+            </>
         );
     }
 }

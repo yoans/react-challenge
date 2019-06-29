@@ -142,45 +142,60 @@ class Card extends Component {
         } = player;
         return (
             <div style={{ ...styles.container, ...style }}>
-            
-                <button onClick={this.togglefavorited}>{this.state.favorited?'Remove From Favorites':'Add To Favorites'}</button>
-                <button onClick={this.toggleEditing}>{this.state.editing?'Save':'Edit'}</button>
+                        
                 <div style = {{
-                    ...(this.state.editing?{}:{display:'none'})
-                    }}
+                        ...(this.props.mini?{display:'none'}:{})
+                        }}
                 >
-                    <button onClick={this.cancel}>Cancel</button>
-                </div>
-                <div style = {{
-                    ...(this.state.editing?{}:{display:'none'})
-                    }}
-                >
-                    {
-                        ['image','name','position'].map((property,index)=>
-                            <input
-                                key={index}
-                                type='text'
-                                onChange={this.updateNewPlayer(property)}
-                                value={this.state.newPlayer[property]}
-                            />
-                        )
-                    }
-                    <select
-                        value={this.state.newPlayer.team}
-                        onChange={this.updateNewPlayer('team')}
+                    <button onClick={this.togglefavorited}>{this.state.favorited?'Remove From Favorites':'Add To Favorites'}</button>
+                    <button onClick={this.toggleEditing}>{this.state.editing?'Save':'Edit'}</button>
+                    <div style = {{
+                        ...(this.state.editing?{}:{display:'none'})
+                        }}
                     >
-                        {this.props.teams.map((aTeam,index)=>
-                            <option
-                                key={index}
-                                value={aTeam.id}
-                            >
-                                {aTeam.name}
-                            </option>
-                        )}
-                    </select>
+                        <button onClick={this.cancel}>Cancel</button>
+                    </div>
+                    <div style = {{
+                        ...(this.state.editing?{}:{display:'none'})
+                        }}
+                    >
+                        {
+                            ['image','name','position'].map((property,index)=>
+                                <input
+                                    key={index}
+                                    type='text'
+                                    onChange={this.updateNewPlayer(property)}
+                                    value={this.state.newPlayer[property]}
+                                />
+                            )
+                        }
+                        <select
+                            value={this.state.newPlayer.team}
+                            onChange={this.updateNewPlayer('team')}
+                        >
+                            {this.props.teams.map((aTeam,index)=>
+                                <option
+                                    key={index}
+                                    value={aTeam.id}
+                                >
+                                    {aTeam.name}
+                                </option>
+                            )}
+                        </select>
+                    </div>
                 </div>
                 <div style={styles.name}>{name}</div>
-                <img src={`${localhostServer}/${image}`} style={styles.playerImage} alt="player_image" />
+                <img
+                    src={`${localhostServer}/${image}`}
+                    style={{
+                        ...styles.playerImage,
+                        ...(this.props.mini?{
+                            height:'25px',
+                            padding: '0'
+                        }:{})
+                    }}
+                    alt="player_image"
+                />
 
                 <div>{this.props.teams.find(aTeam=>aTeam.id === team).name}</div>
             </div>
